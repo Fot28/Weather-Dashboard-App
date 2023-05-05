@@ -2,8 +2,8 @@ var recentSearch = [];
 
 console.log(recentSearch);
 
-function fetchData(event) {
-	event.preventDefault();
+function fetchData() {
+	// event.preventDefault();
 
 	console.log("function working");
 	var cityName = $("#search-input").val().trim();
@@ -40,10 +40,39 @@ function fetchData(event) {
 	});
 }
 
-$(document).ready(function () {
+function renderButtons() {
 	recentSearch = JSON.parse(localStorage.getItem("recentSearch"));
 
-	console.log(recentSearch);
+	// Deleting the movie buttons prior to adding new movie buttons
+	// (this is necessary otherwise we will have repeat buttons)
+	$("#history").empty();
+
+	// Looping through the array of movies
+	for (var i = 0; i < recentSearch.length; i++) {
+		// Then dynamicaly generating buttons for each movie in the array.
+		// This code $("<button>") is all jQuery needs to create the start and end tag. (<button></button>)
+		var a = $("<button>");
+		// Adding a class
+		a.addClass("btn history-button bg-secondary rounded mt-3 text-white w-100");
+		// Adding a data-attribute with a value of the movie at index i
+		a.attr("data-name", recentSearch[i].cityName);
+		// Providing the button's text with a value of the movie at index i
+		a.text(recentSearch[i].cityName);
+		// Adding the button to the HTML
+		$("#history").append(a);
+	}
+}
+
+$(document).ready(function () {
+	renderButtons();
+
+	// console.log(recentSearch);
 });
 
-$(document).on("click", "#search-button", fetchData);
+// $(document).on("click", "#search-button", fetchData);
+$("#search-button").on("click", function (event) {
+	event.preventDefault();
+	fetchData();
+	renderButtons(recentSearch);
+	// add more functions here as needed
+});
