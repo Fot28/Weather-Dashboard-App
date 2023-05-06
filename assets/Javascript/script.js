@@ -41,6 +41,7 @@ function fetchData() {
 			cityicon: response.weather[0].icon,
 			cityLon: response.coord.lon,
 			cityLat: response.coord.lat,
+			countrycode: response.sys.country,
 		};
 		recentSearch = JSON.parse(localStorage.getItem("recentSearch")) || [];
 
@@ -97,7 +98,7 @@ function renderButtons() {
 	// (this is necessary otherwise we will have repeat buttons)
 	$("#history").empty();
 
-	if (recentSearch.length > 5) {
+	if (recentSearch.length > 6) {
 		recentSearch.pop();
 		localStorage.setItem("recentSearch", JSON.stringify(recentSearch));
 		recent5daySearch.pop();
@@ -112,52 +113,16 @@ function renderButtons() {
 		// Adding a class
 		a.addClass("btn history-button bg-secondary rounded mt-3 text-white w-100");
 		// Adding a data-attribute with a value of the movie at index i
-		a.attr("data-name", recentSearch[i].cityName);
+		a.attr(
+			"data-name",
+			recentSearch[i].cityName + "," + recentSearch[i].countrycode
+		);
 		// Providing the button's text with a value of the cityName at index i
 		a.text(recentSearch[i].cityName);
 		// Adding the button to the HTML
 		$("#history").append(a);
 	}
 }
-
-// function displayData() {}
-
-$(document).ready(function () {
-	var recentSearch = JSON.parse(localStorage.getItem("recentSearch")) || [];
-	var recent5daySearch =
-		JSON.parse(localStorage.getItem("recent5daySearch")) || [];
-
-	if (recentSearch.length === 0 && recent5daySearch.length === 0) {
-		return;
-	} else {
-		renderButtons();
-	}
-});
-
-$("#search-button").on("click", function (event) {
-	event.preventDefault();
-	$("#today").empty();
-	fetchData();
-	setTimeout(function () {
-		renderButtons();
-		$("#search-input").val("");
-		displayData();
-	}, 200);
-});
-
-$(document).on("click", ".history-button", function (event) {
-	event.preventDefault();
-	$("#today").empty();
-	var cityName = $(this).attr("data-name"); // Get the data-name value from the clicked button
-	$("#search-input").val(cityName); // Set the value of the search input field to the cityName
-	console.log("history working");
-	fetchData();
-	setTimeout(function () {
-		renderButtons();
-		$("#search-input").val("");
-		displayData();
-	}, 200);
-});
 
 function displayData() {
 	var nowDate = moment().format("(DD/MM/YYYY)");
@@ -180,7 +145,7 @@ function displayData() {
 	var mps = recentSearch[0].cityWind;
 	console.log(mps);
 	var kph = convertMpsToKph(mps);
-	$("#today").addClass("border");
+	$("#today").css("border", "1px solid #343a40");
 	var a = $("<h2>");
 	a.text(recentSearch[0].cityName + " " + nowDate + "");
 	a.append(img); // Append the img element to the h1 element
@@ -196,6 +161,13 @@ function displayData() {
 	d.text("Humidity: " + recentSearch[0].cityHumidity + "%");
 	$("#today").append(d);
 
+	// 5-Day Forecast append info
+	var d = $("<h4>");
+	d.text("5-Day Forecast");
+	$("#forecast").append(d);
+
+	var cardContainer = $("<div>").addClass("container row card-container");
+
 	for (var i = 0; i < recent5daySearch[0].length; i++) {
 		var noon = recent5daySearch[0][i].dt_txt;
 		// console.log(recent5daySearch[0][i].dt_txt);
@@ -203,10 +175,88 @@ function displayData() {
 
 		if (noon.includes(substring)) {
 			console.log(recent5daySearch[0][i].dt_txt);
+
+			var mps = recent5daySearch[0][i].wind.speed;
+			console.log(mps);
+			var kph = convertMpsToKph(mps);
+
 			var dateString = recent5daySearch[0][i].dt_txt;
 			var formattedDate = moment(dateString).format("D/M/YYYY");
+
+			var forecastIconSrc =
+				"https://openweathermap.org/img/wn/" +
+				recent5daySearch[0][i].weather[0].icon +
+				"@2x.png";
+
+			var forecastImg = $("<img>")
+				.attr("src", forecastIconSrc)
+				.css("max-height", "60px")
+				.css("max-width", "60px");
+			console.log(img);
+
+			var card = $("<div>")
+				.addClass("forecast-card pt-2 pl-2 pr-5 pb-2")
+				.css("background-color", "#343a40");
+
+			var e = $("<h5>").text(formattedDate).addClass("text-white");
+			card.append(e);
+			card.append(forecastImg);
+
+			var f = $("<h6>").addClass("text-white");
+			f.text("Temp: " + recent5daySearch[0][i].main.temp + " °C");
+			card.append(f);
+			var g = $("<h6>").addClass("text-white");
+			g.text("Wind: " + kph.toFixed(1) + " KPH");
+			card.append(g);
+			var h = $("<h6>").addClass("text-white");
+			h.addClass("mb-3");
+			h.text("Humidity: " + recent5daySearch[0][i].main.humidity + "%");
+			card.append(h);
+
+			cardContainer.append(card);
 
 			console.log(formattedDate);
 		}
 	}
+	$("#forecast").append(cardContainer);
 }
+
+$(document).ready(function () {
+	var recentSearch = JSON.parse(localStorage.getItem("recentSearch")) || [];
+	var recent5daySearch =
+		JSON.parse(localStorage.getItem("recent5daySearch")) || [];
+
+	if (recentSearch.length === 0 && recent5daySearch.length === 0) {
+		return;
+	} else {
+		renderButtons();
+	}
+});
+
+$("#search-button").on("click", function (event) {
+	event.preventDefault();
+	$("#today").empty();
+	$("#forecast").empty();
+	fetchData();
+	setTimeout(function () {
+		renderButtons();
+		$("#search-input").val("");
+		displayData();
+	}, 200);
+});
+
+$(document).on("click", ".history-button", function (event) {
+	event.preventDefault();
+	$("#today").empty();
+	$("#forecast").empty();
+	var historyname = $(this).attr("data-name"); // Get the data-name value from the clicked button
+	console.log(historyname);
+	$("#search-input").val(historyname); // Set the value of the search input field to the cityName
+	console.log("history working");
+	fetchData();
+	setTimeout(function () {
+		renderButtons();
+		$("#search-input").val("");
+		displayData();
+	}, 200);
+});

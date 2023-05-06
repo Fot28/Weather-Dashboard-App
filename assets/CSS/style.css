@@ -9,11 +9,32 @@
 	max-height: 60px;
 }
 
-#today h5 {
+#today h5,
+.card-container div h5 {
 	font-weight: normal;
 }
 
 #today h5,
 h2 {
 	margin-bottom: 0;
+}
+
+.card-container {
+	margin: 0;
+	padding: 0;
+	display: flex;
+	justify-content: space-between;
+	flex-direction: row;
+	gap: 10px;
+}
+
+.card-container div {
+	display: flex;
+	justify-content: flex-start;
+	flex-direction: column;
+	gap: 0.6rem;
+}
+
+.card-container h6 {
+	font-weight: normal;
 }
