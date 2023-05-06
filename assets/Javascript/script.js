@@ -5,6 +5,11 @@ console.log(recentSearch);
 var cityName = "";
 
 function fetchData() {
+	var nowDate = moment().format("(DD/MM/YYYY)");
+	var nowDay = parseInt(moment().format("DD"));
+	console.log(nowDate);
+	console.log(nowDay);
+
 	var recentSearch = JSON.parse(localStorage.getItem("recentSearch")) || [];
 	var recent5daySearch =
 		JSON.parse(localStorage.getItem("recent5daySearch")) || [];
@@ -31,8 +36,9 @@ function fetchData() {
 		var city = {
 			cityName: response.name,
 			cityTemp: response.main.temp,
-			citySpeed: response.wind.speed,
+			cityWind: response.wind.speed,
 			cityHumidity: response.main.humidity,
+			cityicon: response.weather[0].icon,
 			cityLon: response.coord.lon,
 			cityLat: response.coord.lat,
 		};
@@ -42,7 +48,6 @@ function fetchData() {
 		console.log(city);
 
 		localStorage.setItem("recentSearch", JSON.stringify(recentSearch));
-		console.log(recentSearch);
 
 		var lon = recentSearch[0].cityLon;
 		var lat = recentSearch[0].cityLat;
@@ -60,11 +65,12 @@ function fetchData() {
 		}).then(function (response) {
 			console.log(queryURL);
 			console.log(response);
-			console.log(response.city.id);
+			console.log("HERE" + response.list[1].dt_txt);
+			// for (){
 
-			var city5day = {
-				cityId: response.city.id,
-			};
+			// }
+			var city5day = response.list;
+
 			console.log(city5day);
 
 			recent5daySearch =
@@ -114,6 +120,8 @@ function renderButtons() {
 	}
 }
 
+// function displayData() {}
+
 $(document).ready(function () {
 	var recentSearch = JSON.parse(localStorage.getItem("recentSearch")) || [];
 	var recent5daySearch =
@@ -128,15 +136,18 @@ $(document).ready(function () {
 
 $("#search-button").on("click", function (event) {
 	event.preventDefault();
+	$("#today").empty();
 	fetchData();
 	setTimeout(function () {
 		renderButtons();
 		$("#search-input").val("");
+		displayData();
 	}, 200);
 });
 
 $(document).on("click", ".history-button", function (event) {
 	event.preventDefault();
+	$("#today").empty();
 	var cityName = $(this).attr("data-name"); // Get the data-name value from the clicked button
 	$("#search-input").val(cityName); // Set the value of the search input field to the cityName
 	console.log("history working");
@@ -144,5 +155,58 @@ $(document).on("click", ".history-button", function (event) {
 	setTimeout(function () {
 		renderButtons();
 		$("#search-input").val("");
+		displayData();
 	}, 200);
 });
+
+function displayData() {
+	var nowDate = moment().format("(DD/MM/YYYY)");
+	var recentSearch = JSON.parse(localStorage.getItem("recentSearch")) || [];
+	console.log(recentSearch[0].cityicon);
+	var recent5daySearch =
+		JSON.parse(localStorage.getItem("recent5daySearch")) || [];
+	console.log(recent5daySearch[0]);
+
+	var iconSrc =
+		"https://openweathermap.org/img/wn/" + recentSearch[0].cityicon + "@2x.png";
+
+	var img = $("<img>").attr("src", iconSrc);
+	console.log(img);
+
+	function convertMpsToKph(mps) {
+		return mps * 3.6;
+	}
+
+	var mps = recentSearch[0].cityWind;
+	console.log(mps);
+	var kph = convertMpsToKph(mps);
+	$("#today").addClass("border");
+	var a = $("<h2>");
+	a.text(recentSearch[0].cityName + " " + nowDate + "");
+	a.append(img); // Append the img element to the h1 element
+	$("#today").append(a);
+	var b = $("<h5>");
+	b.text("Temp: " + recentSearch[0].cityTemp + " °C");
+	$("#today").append(b);
+	var c = $("<h5>");
+	c.text("Wind: " + kph.toFixed(1) + " KPH");
+	$("#today").append(c);
+	var d = $("<h5>");
+	d.addClass("mb-3");
+	d.text("Humidity: " + recentSearch[0].cityHumidity + "%");
+	$("#today").append(d);
+
+	for (var i = 0; i < recent5daySearch[0].length; i++) {
+		var noon = recent5daySearch[0][i].dt_txt;
+		// console.log(recent5daySearch[0][i].dt_txt);
+		var substring = "12:00:00";
+
+		if (noon.includes(substring)) {
+			console.log(recent5daySearch[0][i].dt_txt);
+			var dateString = recent5daySearch[0][i].dt_txt;
+			var formattedDate = moment(dateString).format("D/M/YYYY");
+
+			console.log(formattedDate);
+		}
+	}
+}
