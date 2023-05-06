@@ -1,0 +1,19 @@
+#today {
+	display: flex;
+	justify-content: flex-start;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+#today h2 img {
+	max-height: 60px;
+}
+
+#today h5 {
+	font-weight: normal;
+}
+
+#today h5,
+h2 {
+	margin-bottom: 0;
+}
