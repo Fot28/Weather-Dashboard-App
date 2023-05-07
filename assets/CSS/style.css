@@ -1,3 +1,14 @@
+@import url("https://fonts.googleapis.com/css2?family=Source+Serif+Pro:wght@600&display=swap");
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	font-family: "Source Serif Pro", serif;
+}
+
 #today {
 	display: flex;
 	justify-content: flex-start;
@@ -19,6 +30,10 @@ h2 {
 	margin-bottom: 0;
 }
 
+.search-button {
+	background-color: #5098e6;
+}
+
 .card-container {
 	margin: 0;
 	padding: 0;
@@ -37,4 +52,27 @@ h2 {
 
 .card-container h6 {
 	font-weight: normal;
+}
+
+header h1 {
+	font-family: "Source Serif Pro", serif;
+}
+
+#form-heading {
+	font-family: "Source Serif Pro", serif;
+}
+
+#history button {
+	color: black !important;
+	font-size: 105% !important;
+	background-color: #aeaeae;
+}
+
+#search-button {
+	font-size: 105% !important;
+}
+
+.color-transition {
+	background: linear-gradient(to right, #3463bc 0%, #210a4d 100%);
+	transition: background 0.5s;
 }
