@@ -10,7 +10,7 @@ N/A
 
 ## Usage
 
-To use this Weather-Dashboard-App, open the website link, click on search input and enter a city name then click search and it will provide you with the city's weather information today and 5-day forecast. If you need to check again on a city is on your history you can click the button with the name of the city to show again the weather information.
+To use this Weather-Dashboard-App, open the website link, click on search input and enter a city name (if you want to be more precise insert similar to example: "Essex,uk" where uk is use the specific country code) then click search and it will provide you with the city's weather information today and 5-day forecast. If you need to check again on a city is on your history you can click the button with the name of the city to show again the weather information.
 
 [Website link](https://fot28.github.io/Weather-Dashboard-App/)
 
